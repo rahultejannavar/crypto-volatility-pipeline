@@ -1,0 +1,25 @@
+# Streaming
+confluent-kafka
+websocket-client
+
+# Data
+pandas
+pyarrow
+numpy
+
+# ML
+scikit-learn
+xgboost
+
+# Tracking & Monitoring
+mlflow
+evidently
+
+# Config & Utils
+pyyaml
+python-dotenv
+
+# Notebooks & Visualization
+jupyter
+matplotlib
+seaborn

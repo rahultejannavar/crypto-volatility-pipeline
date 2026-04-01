@@ -1,0 +1,22 @@
+# Coinbase WebSocket
+coinbase:
+  pairs:
+    - "BTC-USD"
+  channel: "ticker"
+
+# Kafka
+kafka:
+  broker: "localhost:9092"
+  topics:
+    raw: "ticks.raw"
+    features: "ticks.features"
+
+# Feature Engineering
+features:
+  horizon_seconds: 60
+  window_sizes: [30, 60, 120]
+
+# MLflow
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "crypto-volatility"

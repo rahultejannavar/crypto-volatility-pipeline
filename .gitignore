@@ -1,0 +1,30 @@
+# Environment & Secrets
+.env
+*.pem
+
+# Data (too large for Git)
+data/raw/
+data/processed/
+
+# MLflow tracking
+mlruns/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+docker/volumes/
