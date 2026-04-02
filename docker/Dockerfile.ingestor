@@ -1,0 +1,19 @@
+# Start from a slim Python image
+FROM python:3.11-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy only requirements first (Docker caches this layer)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the project
+COPY config.yaml .
+COPY scripts/ws_ingest.py scripts/
+
+# Create the data directory for NDJSON output
+RUN mkdir -p data/raw
+
+# Default command: ingest BTC-USD for 15 minutes
+CMD ["python", "scripts/ws_ingest.py", "--pair", "BTC-USD", "--minutes", "15"]
