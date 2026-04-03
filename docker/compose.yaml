@@ -30,16 +30,16 @@ services:
     volumes:
       - kafka_data:/var/lib/kafka/data
 
-  # ── MLflow Tracking Server ──
+# ── MLflow Tracking Server ──
   mlflow:
     image: python:3.11-slim
     container_name: mlflow
     ports:
       - "5001:5000"
     working_dir: /mlflow
-    command: bash -c "pip install mlflow --quiet && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow/mlflow.db --default-artifact-root /mlflow/artifacts --allowed-hosts localhost:5001"
+    command: bash -c "pip install 'mlflow<3' --quiet && mkdir -p /mlflow && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db --default-artifact-root file:///mlflow/artifacts --serve-artifacts"
+    volumes:
       - mlflow_data:/mlflow
-
 # Named volumes
 volumes:
   kafka_data:

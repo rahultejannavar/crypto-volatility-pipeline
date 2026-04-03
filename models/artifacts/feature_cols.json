@@ -1,0 +1,10 @@
+[
+  "midprice",
+  "spread_pct",
+  "return_mean",
+  "return_std",
+  "return_skew",
+  "tick_count",
+  "price_range_pct",
+  "volume_24h"
+]
