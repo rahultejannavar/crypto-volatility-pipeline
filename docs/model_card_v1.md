@@ -2,6 +2,7 @@
 
 **Project:** Real-Time BTC-USD Volatility Spike Detection  
 **Course:** 94-879 Fundamentals of Operationalizing AI, Heinz College of Information Systems and Public Policy, CMU
+
 **Author:** Rahul Tejannavar  
 **Date:** April 3, 2026  
 **Version:** 1.0
