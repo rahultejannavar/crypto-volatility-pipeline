@@ -8,38 +8,69 @@ services:
     ports:
       - "9092:9092"
     environment:
-      # KRaft mode settings
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-
-      # Listener configuration
       KAFKA_LISTENERS: PLAINTEXT://:9094,CONTROLLER://:9093,EXTERNAL://:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9094,EXTERNAL://localhost:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-
-      # Auto-create topics
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-
-      # Single-node settings
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
     volumes:
       - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-topics.sh --bootstrap-server localhost:9092 --list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# ── MLflow Tracking Server ──
+  # ── MLflow Tracking Server ──
   mlflow:
     image: python:3.11-slim
     container_name: mlflow
     ports:
       - "5001:5000"
     working_dir: /mlflow
-    command: bash -c "pip install 'mlflow<3' --quiet && mkdir -p /mlflow && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db --default-artifact-root file:///mlflow/artifacts --serve-artifacts"
+    command: bash -c "pip install 'mlflow<3' --quiet && mkdir -p /mlflow && mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:////mlflow/mlflow.db --default-artifact-root /mlflow/artifacts"
     volumes:
       - mlflow_data:/mlflow
+
+  # ── Coinbase WebSocket Ingestor ──
+  ingestor:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.ingestor
+    container_name: ingestor
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      KAFKA_BROKER: kafka:9094
+    volumes:
+      - ../data/raw:/app/data/raw
+    restart: on-failure
+
+  # ── Feature Engineering Pipeline ──
+  featurizer:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.featurizer
+    container_name: featurizer
+    depends_on:
+      kafka:
+        condition: service_healthy
+      ingestor:
+        condition: service_started
+    environment:
+      KAFKA_BROKER: kafka:9094
+    volumes:
+      - ../data/processed:/app/data/processed
+    restart: on-failure
+
 # Named volumes
 volumes:
   kafka_data:

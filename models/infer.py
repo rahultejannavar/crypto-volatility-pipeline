@@ -128,12 +128,15 @@ def load_model_local(model_name):
     else:
         raise FileNotFoundError(f"Feature columns not found at {feature_path}")
 
-    # Load scaler (if exists)
+    # Load scaler (only for models that need it — not tree-based models)
     scaler = None
-    scaler_path = os.path.join(artifacts_dir, "scaler.joblib")
-    if os.path.exists(scaler_path):
-        scaler = joblib.load(scaler_path)
-        print(f"[LOAD] Scaler loaded from local")
+    if model_name == "logistic_regression":
+        scaler_path = os.path.join(artifacts_dir, "scaler.joblib")
+        if os.path.exists(scaler_path):
+            scaler = joblib.load(scaler_path)
+            print(f"[LOAD] Scaler loaded from local")
+    else:
+        print(f"[LOAD] No scaler needed for {model_name}")
 
     # Load model
     model_path = os.path.join(artifacts_dir, f"{model_name}_model.joblib")

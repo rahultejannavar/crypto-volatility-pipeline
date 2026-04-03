@@ -1,0 +1,19 @@
+# Start from a slim Python image
+FROM python:3.11-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy only requirements first (Docker caches this layer)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the project files needed for featurization
+COPY config.yaml .
+COPY features/featurizer.py features/
+
+# Create directories for output
+RUN mkdir -p data/processed
+
+# Default command: run featurizer in live mode
+CMD ["python", "features/featurizer.py", "--mode", "live"]
