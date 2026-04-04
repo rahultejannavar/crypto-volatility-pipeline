@@ -2,7 +2,7 @@
 
 **Project:** Detecting Crypto Volatility in Real-Time  
 **Course:** 94-879 Fundamentals of Operationalizing AI, CMU Heinz College  
-**Author:** [Your Name]  
+**Author:** Rahul Tejannavar  
 **Last Updated:** April 2, 2026  
 
 ---
